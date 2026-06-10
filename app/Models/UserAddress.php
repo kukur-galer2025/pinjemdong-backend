@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class UserAddress extends Model
+{
+    protected $fillable = [
+        'user_id',
+        'label',
+        'address',
+        'latitude',
+        'longitude'
+    ];
+
+    protected $casts = [
+        'latitude' => 'float',
+        'longitude' => 'float',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}
