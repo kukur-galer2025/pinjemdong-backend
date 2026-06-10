@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string('phone')->nullable()->after('email');
             $table->string('avatar')->nullable()->after('phone');
-            $table->enum('role', ['admin', 'staff', 'customer'])->default('customer')->after('avatar');
+            $table->enum('role', ['admin', 'customer'])->default('customer')->after('avatar');
             $table->string('google_id')->nullable()->unique()->after('role');
             $table->boolean('is_blacklisted')->default(false)->after('google_id');
             $table->text('blacklist_reason')->nullable()->after('is_blacklisted');
