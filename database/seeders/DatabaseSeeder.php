@@ -167,7 +167,6 @@ class DatabaseSeeder extends Seeder
                     'name' => $p['name'],
                     'description' => $p['desc'],
                     'price_per_day' => $p['price'],
-                    'late_fee_per_day' => $p['late_fee'],
                     'min_dp_percentage' => $p['dp'],
                     'brand' => $p['brand'],
                     'total_units' => $p['units'],
