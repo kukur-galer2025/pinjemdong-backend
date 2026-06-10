@@ -26,66 +26,70 @@ class DatabaseSeeder extends Seeder
         // ========================================
         // ADMIN USER
         // ========================================
-        $admin = User::create([
-            'name' => 'Admin Pinjemdong',
-            'email' => 'admin@pinjemdong.com',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-            'phone' => '081234567890',
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@pinjemdong.com'],
+            [
+                'name' => 'Admin Pinjemdong',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'phone' => '081234567890',
+            ]
+        );
 
         // ========================================
         // DEMO CUSTOMER
         // ========================================
-        $customer = User::create([
-            'name' => 'Budi Santoso',
-            'email' => 'budi@gmail.com',
-            'password' => Hash::make('password'),
-            'role' => 'customer',
-            'phone' => '081298765432',
-        ]);
+        $customer = User::firstOrCreate(
+            ['email' => 'budi@gmail.com'],
+            [
+                'name' => 'Budi Santoso',
+                'password' => Hash::make('password'),
+                'role' => 'customer',
+                'phone' => '081298765432',
+            ]
+        );
 
-        UserVerification::create([
-            'user_id' => $customer->id,
-            'ktp_number' => '3201234567890001',
-            'ktp_image' => 'kyc/ktp/demo.jpg',
-            'selfie_image' => 'kyc/selfie/demo.jpg',
-            'emergency_contact_name' => 'Siti Aminah',
-            'emergency_contact_phone' => '081211112222',
-            'address' => 'Jl. Merdeka No. 45, Jakarta Selatan',
-            'status' => 'approved',
-            'verified_at' => now(),
-        ]);
+        UserVerification::firstOrCreate(
+            ['user_id' => $customer->id],
+            [
+                'ktp_number' => '3201234567890001',
+                'ktp_image' => 'kyc/ktp/demo.jpg',
+                'selfie_image' => 'kyc/selfie/demo.jpg',
+                'emergency_contact_name' => 'Siti Aminah',
+                'emergency_contact_phone' => '081211112222',
+                'address' => 'Jl. Merdeka No. 45, Jakarta Selatan',
+                'status' => 'approved',
+                'verified_at' => now(),
+            ]
+        );
 
         // ========================================
         // BANK ACCOUNTS
         // ========================================
-        BankAccount::insert([
+        $banks = [
             [
                 'bank_name' => 'BCA',
                 'account_number' => '1234567890',
                 'account_holder' => 'PT Pinjemdong Indonesia',
                 'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
                 'bank_name' => 'Mandiri',
                 'account_number' => '0987654321',
                 'account_holder' => 'PT Pinjemdong Indonesia',
                 'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
                 'bank_name' => 'BNI',
                 'account_number' => '5678901234',
                 'account_holder' => 'PT Pinjemdong Indonesia',
                 'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
-        ]);
+        ];
+
+        foreach ($banks as $b) {
+            BankAccount::firstOrCreate(['account_number' => $b['account_number']], $b);
+        }
 
         // ========================================
         // CATEGORIES
@@ -100,7 +104,10 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($categories as $cat) {
-            Category::create(array_merge($cat, ['is_active' => true]));
+            Category::firstOrCreate(
+                ['slug' => $cat['slug']],
+                array_merge($cat, ['is_active' => true])
+            );
         }
 
         // ========================================
@@ -151,25 +158,30 @@ class DatabaseSeeder extends Seeder
         foreach ($products as $p) {
             $category = Category::where('slug', $p['category'])->first();
 
-            $product = Product::create([
-                'category_id' => $category->id,
-                'name' => $p['name'],
-                'slug' => $p['slug'],
-                'description' => $p['desc'],
-                'price_per_day' => $p['price'],
-                'late_fee_per_day' => $p['late_fee'],
-                'min_dp_percentage' => $p['dp'],
-                'brand' => $p['brand'],
-                'total_units' => $p['units'],
-                'is_active' => true,
-                'is_featured' => $p['featured'],
-            ]);
+            if (!$category) continue;
+
+            $product = Product::firstOrCreate(
+                ['slug' => $p['slug']],
+                [
+                    'category_id' => $category->id,
+                    'name' => $p['name'],
+                    'description' => $p['desc'],
+                    'price_per_day' => $p['price'],
+                    'late_fee_per_day' => $p['late_fee'],
+                    'min_dp_percentage' => $p['dp'],
+                    'brand' => $p['brand'],
+                    'total_units' => $p['units'],
+                    'is_active' => true,
+                    'is_featured' => $p['featured'],
+                ]
+            );
 
             // Create units with serial numbers
             for ($i = 1; $i <= $p['units']; $i++) {
-                ProductUnit::create([
+                ProductUnit::firstOrCreate([
                     'product_id' => $product->id,
                     'serial_number' => strtoupper(Str::slug($p['name'])) . '-' . str_pad($i, 3, '0', STR_PAD_LEFT),
+                ], [
                     'status' => 'available',
                 ]);
             }
@@ -181,105 +193,120 @@ class DatabaseSeeder extends Seeder
         $allProducts = Product::all();
         foreach ($allProducts as $prod) {
             // Primary image
-            ProductImage::create([
+            ProductImage::firstOrCreate([
                 'product_id' => $prod->id,
-                'image_path' => 'https://picsum.photos/seed/' . $prod->slug . '/600/400',
                 'is_primary' => true,
+            ], [
+                'image_path' => 'https://picsum.photos/seed/' . $prod->slug . '/600/400',
                 'sort_order' => 1
             ]);
             
             // Secondary images
-            ProductImage::create([
+            ProductImage::firstOrCreate([
                 'product_id' => $prod->id,
+                'sort_order' => 2
+            ], [
                 'image_path' => 'https://picsum.photos/seed/' . $prod->slug . '-2/600/400',
                 'is_primary' => false,
-                'sort_order' => 2
             ]);
-            ProductImage::create([
+            ProductImage::firstOrCreate([
                 'product_id' => $prod->id,
+                'sort_order' => 3
+            ], [
                 'image_path' => 'https://picsum.photos/seed/' . $prod->slug . '-3/600/400',
                 'is_primary' => false,
-                'sort_order' => 3
             ]);
         }
 
         // ========================================
         // RENTAL PACKAGES
         // ========================================
-        $package = RentalPackage::create([
-            'name' => 'Paket Camping Berdua',
-            'slug' => 'paket-camping-berdua',
-            'description' => 'Sewa alat camping lengkap untuk 2 orang.',
-            'price_per_day' => 150000,
-            'original_price_per_day' => 200000,
-            'is_active' => true,
-            'image' => 'https://picsum.photos/seed/paket-camping/600/400'
-        ]);
+        $package = RentalPackage::firstOrCreate(
+            ['slug' => 'paket-camping-berdua'],
+            [
+                'name' => 'Paket Camping Berdua',
+                'description' => 'Sewa alat camping lengkap untuk 2 orang.',
+                'price_per_day' => 150000,
+                'original_price_per_day' => 200000,
+                'is_active' => true,
+                'image' => 'https://picsum.photos/seed/paket-camping/600/400'
+            ]
+        );
 
         $tenda = Product::where('slug', 'tenda-dome-4-orang')->first();
         $sleepingbag = Product::where('slug', 'sleeping-bag-premium')->first();
 
         if ($tenda && $sleepingbag) {
-            RentalPackageItem::create(['rental_package_id' => $package->id, 'product_id' => $tenda->id, 'quantity' => 1]);
-            RentalPackageItem::create(['rental_package_id' => $package->id, 'product_id' => $sleepingbag->id, 'quantity' => 2]);
+            RentalPackageItem::firstOrCreate(['rental_package_id' => $package->id, 'product_id' => $tenda->id], ['quantity' => 1]);
+            RentalPackageItem::firstOrCreate(['rental_package_id' => $package->id, 'product_id' => $sleepingbag->id], ['quantity' => 2]);
         }
 
         // ========================================
         // RENTALS & ITEMS
         // ========================================
-        $rental = Rental::create([
-            'invoice_number' => 'INV-' . date('Ymd') . '-0001',
-            'user_id' => $customer->id,
-            'start_date' => now()->addDays(2),
-            'end_date' => now()->addDays(5),
-            'total_days' => 3,
-            'subtotal' => 255000,
-            'total_amount' => 255000, // 85k * 3
-            'dp_amount' => 51000,
-            'remaining_amount' => 204000,
-            'delivery_method' => 'pickup',
-            'status' => 'pending_payment',
-            'notes' => 'Tolong disiapkan ya min.'
-        ]);
+        $invoiceNumber = 'INV-' . date('Ymd') . '-0001';
+        $rental = Rental::firstOrCreate(
+            ['invoice_number' => $invoiceNumber],
+            [
+                'user_id' => $customer->id,
+                'start_date' => now()->addDays(2),
+                'end_date' => now()->addDays(5),
+                'total_days' => 3,
+                'subtotal' => 255000,
+                'total_amount' => 255000, // 85k * 3
+                'dp_amount' => 51000,
+                'remaining_amount' => 204000,
+                'delivery_method' => 'pickup',
+                'status' => 'pending_payment',
+                'notes' => 'Tolong disiapkan ya min.'
+            ]
+        );
 
         if ($tenda) {
             $unit = ProductUnit::where('product_id', $tenda->id)->first();
-            RentalItem::create([
-                'rental_id' => $rental->id,
-                'product_id' => $tenda->id,
-                'product_unit_id' => $unit->id,
-                'price_per_day' => $tenda->price_per_day,
-                'quantity' => 1,
-                'subtotal' => $tenda->price_per_day * 1
-            ]);
+            if ($unit) {
+                RentalItem::firstOrCreate(
+                    ['rental_id' => $rental->id, 'product_id' => $tenda->id],
+                    [
+                        'product_unit_id' => $unit->id,
+                        'price_per_day' => $tenda->price_per_day,
+                        'quantity' => 1,
+                        'subtotal' => $tenda->price_per_day * 1
+                    ]
+                );
+            }
         }
 
         // ========================================
         // PAYMENTS
         // ========================================
         $bank = BankAccount::first();
-        Payment::create([
-            'rental_id' => $rental->id,
-            'type' => 'dp',
-            'amount' => 51000,
-            'status' => 'pending',
-            'proof_image' => 'payments/demo-proof.jpg'
-        ]);
+        if ($bank) {
+            Payment::firstOrCreate(
+                ['rental_id' => $rental->id, 'type' => 'dp'],
+                [
+                    'amount' => 51000,
+                    'status' => 'pending',
+                    'proof_image' => 'payments/demo-proof.jpg'
+                ]
+            );
+        }
 
         // ========================================
         // REVIEWS & WISHLISTS
         // ========================================
         if ($tenda) {
-            Review::create([
-                'product_id' => $tenda->id,
-                'user_id' => $customer->id,
-                'rental_id' => $rental->id, // dummy for review
-                'rating' => 5,
-                'comment' => 'Barangnya bagus banget, bersih!'
-            ]);
+            Review::firstOrCreate(
+                ['product_id' => $tenda->id, 'user_id' => $customer->id],
+                [
+                    'rental_id' => $rental->id, // dummy for review
+                    'rating' => 5,
+                    'comment' => 'Barangnya bagus banget, bersih!'
+                ]
+            );
 
             // wishlist
-            $customer->wishlist()->attach($tenda->id);
+            $customer->wishlist()->syncWithoutDetaching([$tenda->id]);
         }
     }
 }
