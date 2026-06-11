@@ -43,13 +43,17 @@ class UserVerificationController extends Controller
         );
 
         if ($request->save_as_primary_address) {
-            \App\Models\UserAddress::create([
-                'user_id' => $request->user()->id,
-                'label' => 'Alamat Utama',
-                'address' => $request->address,
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
-            ]);
+            \App\Models\UserAddress::updateOrCreate(
+                [
+                    'user_id' => $request->user()->id,
+                    'label' => 'Alamat Utama',
+                ],
+                [
+                    'address' => $request->address,
+                    'latitude' => $request->latitude,
+                    'longitude' => $request->longitude,
+                ]
+            );
         }
 
         return response()->json([
