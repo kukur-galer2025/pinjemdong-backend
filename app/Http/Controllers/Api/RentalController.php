@@ -117,9 +117,6 @@ class RentalController extends Controller
                 // Check availability
                 $availableUnits = $product->units()
                     ->where('status', 'available')
-                    ->whereDoesntHave('rentalItems', function ($q) use ($startDate, $endDate) {
-                        // Actually we need to join through rental
-                    })
                     ->take($item['quantity'])
                     ->get();
 
