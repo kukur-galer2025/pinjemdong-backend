@@ -26,7 +26,14 @@ class UserAddressController extends Controller
             'longitude' => 'required|numeric',
         ]);
 
-        $address = $request->user()->addresses()->create($validated);
+        $address = $request->user()->addresses()->updateOrCreate(
+            ['label' => $validated['label']],
+            [
+                'address' => $validated['address'],
+                'latitude' => $validated['latitude'],
+                'longitude' => $validated['longitude'],
+            ]
+        );
 
         return response()->json([
             'message' => 'Alamat berhasil disimpan.',
