@@ -195,7 +195,7 @@ class DatabaseSeeder extends Seeder
                 'product_id' => $prod->id,
                 'is_primary' => true,
             ], [
-                'image_path' => 'products/' . $prod->slug . '.png',
+                'image_path' => '/storage/products/' . $prod->slug . '.png',
                 'sort_order' => 1
             ]);
             
