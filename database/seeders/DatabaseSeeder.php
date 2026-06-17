@@ -199,21 +199,7 @@ class DatabaseSeeder extends Seeder
                 'sort_order' => 1
             ]);
             
-            // Secondary images
-            ProductImage::firstOrCreate([
-                'product_id' => $prod->id,
-                'sort_order' => 2
-            ], [
-                'image_path' => 'https://picsum.photos/seed/' . $prod->slug . '-2/600/400',
-                'is_primary' => false,
-            ]);
-            ProductImage::firstOrCreate([
-                'product_id' => $prod->id,
-                'sort_order' => 3
-            ], [
-                'image_path' => 'https://picsum.photos/seed/' . $prod->slug . '-3/600/400',
-                'is_primary' => false,
-            ]);
+
         }
 
         // ========================================
