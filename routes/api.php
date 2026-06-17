@@ -137,5 +137,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/packages', [\App\Http\Controllers\Api\Admin\PackageManagementController::class, 'store']);
         Route::post('/packages/{id}', [\App\Http\Controllers\Api\Admin\PackageManagementController::class, 'update']); // Using POST with _method=PUT to support FormData
         Route::delete('/packages/{id}', [\App\Http\Controllers\Api\Admin\PackageManagementController::class, 'destroy']);
+        // Category Management
+        Route::post('/categories', [CategoryController::class, 'store']);
+        Route::put('/categories/{category}', [CategoryController::class, 'update']);
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
     });
 });
