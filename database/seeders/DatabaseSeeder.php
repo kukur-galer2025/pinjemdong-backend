@@ -191,12 +191,11 @@ class DatabaseSeeder extends Seeder
         // ========================================
         $allProducts = Product::all();
         foreach ($allProducts as $prod) {
-            // Primary image
             ProductImage::firstOrCreate([
                 'product_id' => $prod->id,
                 'is_primary' => true,
             ], [
-                'image_path' => 'https://picsum.photos/seed/' . $prod->slug . '/600/400',
+                'image_path' => 'products/' . $prod->slug . '.png',
                 'sort_order' => 1
             ]);
             
