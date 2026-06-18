@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:3000', 'http://localhost:3001', 'https://PinjemLur.my.id'],
+    'allowed_origins' => ['http://localhost:3000', 'http://localhost:3001', 'https://pinjemlur.my.id', 'https://pinjemdong.my.id', 'https://www.pinjemdong.my.id', 'https://www.pinjemlur.my.id'],
 
     'allowed_origins_patterns' => [],
 
