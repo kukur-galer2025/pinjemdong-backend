@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Laporan Transaksi PinjemDong</title>
+    <title>Laporan Transaksi PinjemLur</title>
     <style>
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; color: #334155; margin: 0; padding: 20px; }
         .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e2e8f0; }
@@ -45,7 +45,7 @@
     @endphp
 
     <div class="header">
-        <h1>PINJEMDONG</h1>
+        <h1>PINJEMLUR</h1>
         <p>Laporan Resmi Transaksi Penyewaan</p>
         <p style="font-size: 11px; margin-top: 10px;">Dicetak pada: {{ now()->format('d F Y, H:i') }}</p>
     </div>
@@ -127,7 +127,7 @@
     </table>
 
     <div class="footer">
-        Dokumen ini dibuat otomatis oleh Sistem Manajemen PinjemDong &copy; {{ date('Y') }}
+        Dokumen ini dibuat otomatis oleh Sistem Manajemen PinjemLur &copy; {{ date('Y') }}
     </div>
 
 </body>
